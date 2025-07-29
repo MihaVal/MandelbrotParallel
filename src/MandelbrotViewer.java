@@ -205,6 +205,17 @@ public class MandelbrotViewer extends JFrame {
         }
     }
 
+    private static class Chunk {
+        final int startX, startY, endX, endY;
+
+        public Chunk(int startX, int startY, int endX, int endY) {
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
+        }
+    }
+
     public static void main(String[] args) {
 
 
