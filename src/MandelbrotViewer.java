@@ -259,6 +259,19 @@ public class MandelbrotViewer extends JFrame {
         }
     }
 
+    private void processChunk(Chunk chunk, int width, int height) {
+        for (int x = chunk.startX; x < chunk.endX; x++) {
+            for (int y = chunk.startY; y < chunk.endY; y++) {
+                double real = xMin + x * (xMax - xMin) / width;
+                double imag = yMin + y * (yMax - yMin) / height;
+                Complex c = new Complex(real, imag);
+                int color = computePoint(c);
+                image.setRGB(x, y, color);
+            }
+        }
+    }
+
+
     private static class Chunk {
         final int startX, startY, endX, endY;
 
