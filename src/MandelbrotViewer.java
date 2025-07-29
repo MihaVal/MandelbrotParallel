@@ -6,8 +6,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class MandelbrotViewer extends JFrame {
     private int width = 800;
@@ -26,13 +30,18 @@ public class MandelbrotViewer extends JFrame {
     private static boolean headlessMode = false; //nongui bool
     private static boolean runTests = false; // test bool
 
+    // for parallel
+    private BlockingQueue<Chunk> chunkQueue;
+
     public MandelbrotViewer() {
         if (!headlessMode) {
-            setTitle("Mandelbrot Set Window");
+            setTitle("Mandelbrot-Parallel Window");
             setSize(width, height);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setLocationRelativeTo(null);
             setResizable(true);
+
+
 
             addKeyListener(new KeyAdapter() {
                 @Override
@@ -121,11 +130,56 @@ public class MandelbrotViewer extends JFrame {
     }
 
     private void renderMandelbrot() {
+        int width = getWidth();
+        int height = getHeight();
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        final int chunkSize = 30; // chunk = 30x30 px
+        int numChunksX = (int) Math.ceil((double) width / chunkSize);
+        int numChunksY = (int) Math.ceil((double) height / chunkSize);
+
+        chunkQueue = new ArrayBlockingQueue<>(numChunksX * numChunksY, true);
+
+        // Napolnimo čakalno vrsto s chunki
+        for (int chunkX = 0; chunkX < numChunksX; chunkX++) {
+            for (int chunkY = 0; chunkY < numChunksY; chunkY++) {
+                int startX = chunkX * chunkSize;
+                int endX = Math.min(startX + chunkSize, width);
+                int startY = chunkY * chunkSize;
+                int endY = Math.min(startY + chunkSize, height);
+                chunkQueue.offer(new Chunk(startX, startY, endX, endY));
+            }
+        }
+
+        // Zaženemo niti
+        List<Thread> threads = new ArrayList<>();
         long start = System.currentTimeMillis();
-        // parralel part implement space
+
+        for (int i = 0; i < numThreads; i++) {
+            Thread thread = new Thread(() -> {
+                Chunk chunk;
+                while ((chunk = chunkQueue.poll()) != null) {
+                    processChunk(chunk, width, height); // obdelaj chunk
+                }
+            });
+            threads.add(thread);
+            thread.start();
+        }
+
+        // Počakamo na vse niti
+        try {
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         long end = System.currentTimeMillis();
         Logger.log("Render time: " + (end - start) + " ms", LogLevel.Info);
+        repaint();
+
     }
 
     private int computePoint(Complex c) {
