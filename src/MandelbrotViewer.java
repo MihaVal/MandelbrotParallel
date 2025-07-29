@@ -42,7 +42,6 @@ public class MandelbrotViewer extends JFrame {
             setResizable(true);
 
 
-
             addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
@@ -239,7 +238,7 @@ public class MandelbrotViewer extends JFrame {
         String csvFile = "mandelbrot_results.csv";
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(csvFile))) {
-            writer.println("width,height,sequential");
+            writer.println("width,height,parallel");
 
             for (int size = startSize; size <= maxSize; size += 1000) {
                 MandelbrotViewer viewer = new MandelbrotViewer();
@@ -295,7 +294,7 @@ public class MandelbrotViewer extends JFrame {
                 }
             }
 
-            if (headlessMode) {//completely lost sem tle atm, rad bi no gui +only calculate exec time of that no popup
+            if (headlessMode) {
                 long startTime = System.currentTimeMillis();
                 MandelbrotViewer viewer = new MandelbrotViewer();
                 viewer.renderMandelbrot();
