@@ -129,9 +129,9 @@ public class MandelbrotViewer extends JFrame {
     }
 
     private void renderMandelbrot() {
-        int width = getWidth();
-        int height = getHeight();
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int renderWidth = headlessMode ? width : getWidth(); //fix za nongui
+        int renderHeight = headlessMode ? height : getHeight();
+        image = new BufferedImage(renderWidth, renderHeight, BufferedImage.TYPE_INT_RGB);
 
         int numThreads = Runtime.getRuntime().availableProcessors();
         final int chunkSize = 30; // chunk = 30x30 px
@@ -176,7 +176,9 @@ public class MandelbrotViewer extends JFrame {
         }
 
         long end = System.currentTimeMillis();
-        Logger.log("Render time: " + (end - start) + " ms", LogLevel.Info);
+        if (!headlessMode) {
+            Logger.log("Render time: " + (end - start) + " ms", LogLevel.Info);
+        }
         repaint();
 
     }
@@ -300,6 +302,7 @@ public class MandelbrotViewer extends JFrame {
                 viewer.renderMandelbrot();
                 long endTime = System.currentTimeMillis();
                 Logger.log("Non-GUI speed: " + (endTime - startTime) + " ms", LogLevel.Status);
+                System.exit(0);
             }
 
             if (runTests) {
