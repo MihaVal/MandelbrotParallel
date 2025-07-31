@@ -129,9 +129,7 @@ public class MandelbrotViewer extends JFrame {
     }
 
     private void renderMandelbrot() {
-        int renderWidth = headlessMode ? width : getWidth(); //fix za nongui
-        int renderHeight = headlessMode ? height : getHeight();
-        image = new BufferedImage(renderWidth, renderHeight, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         int numThreads = Runtime.getRuntime().availableProcessors();
         final int chunkSize = 30; // chunk = 30x30 px
@@ -236,7 +234,7 @@ public class MandelbrotViewer extends JFrame {
 
     private static void runPerformanceTests() {
         int startSize = 1000;
-        int maxSize = 5000;
+        int maxSize = 10000;
         String csvFile = "mandelbrot_results.csv";
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(csvFile))) {
@@ -249,7 +247,7 @@ public class MandelbrotViewer extends JFrame {
                 long startTime = System.currentTimeMillis();
                 viewer.renderMandelbrot();
                 long endTime = System.currentTimeMillis();
-                long renderTime = endTime - startTime;
+                long renderTime =    endTime - startTime;
 
                 Logger.log("Rendered " + size + "x" + size + " in " + renderTime + " ms", LogLevel.Status);
                 writer.println(size + "," + size + "," + renderTime);
