@@ -130,14 +130,11 @@ public class MandelbrotViewer extends JFrame {
 
     private void renderMandelbrot() {
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
         int numThreads = Runtime.getRuntime().availableProcessors();
         final int chunkSize = 30; // chunk = 30x30 px
         int numChunksX = (int) Math.ceil((double) width / chunkSize);
         int numChunksY = (int) Math.ceil((double) height / chunkSize);
-
         chunkQueue = new ArrayBlockingQueue<>(numChunksX * numChunksY, true);
-
         // Napolnimo čakalno vrsto s chunki
         for (int chunkX = 0; chunkX < numChunksX; chunkX++) {
             for (int chunkY = 0; chunkY < numChunksY; chunkY++) {
@@ -148,7 +145,6 @@ public class MandelbrotViewer extends JFrame {
                 chunkQueue.offer(new Chunk(startX, startY, endX, endY));
             }
         }
-
         // Zaženemo niti
         List<Thread> threads = new ArrayList<>();
         long start = System.currentTimeMillis();
@@ -163,7 +159,6 @@ public class MandelbrotViewer extends JFrame {
             threads.add(thread);
             thread.start();
         }
-
         // Počakamo na vse niti
         try {
             for (Thread thread : threads) {
@@ -172,13 +167,11 @@ public class MandelbrotViewer extends JFrame {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
         long end = System.currentTimeMillis();
         if (!headlessMode) {
             Logger.log("Render time: " + (end - start) + " ms", LogLevel.Info);
         }
         repaint();
-
     }
 
     private int computePoint(Complex c) {
