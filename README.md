@@ -7,7 +7,6 @@
 ### Extra information:
 
 #### - Used Java version 15.0.1
-#### - For testing 4 workers were used
 #### - If u want to run the test or nongui modes you must edit the Configuration and in program arguments add either --test or --nongui
 
 ### References:
