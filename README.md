@@ -7,7 +7,7 @@
 ### Extra information:
 
 #### - Used Java version 15.0.1
-#### - If u want to run the test or nongui modes you must edit the Configuration and in program arguments add either --test or --nongui
+#### - If u want to run the test or nonGUI modes you must edit the Configuration and in program arguments add either --test or --nongui
 
 ### References:
 
